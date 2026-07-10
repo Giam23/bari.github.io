@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @keyframes slideInRight { from { opacity:0; transform:translateX(28px);} to { opacity:1; transform:translateX(0);} }
+  @keyframes slideOutLeft { from { opacity:1; transform:translateX(0);} to { opacity:0; transform:translateX(-28px);} }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
+  html, body { margin:0; padding:0; background:#0f2b30; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  input::placeholder { color:rgba(255,255,255,0.35); }
+  input:focus { outline:none; }
+</style>
+</helmet>
+
+<div style="width:100%; min-height:100vh; background:#0f2b30; font-family:'Poppins',system-ui,sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:0; overflow-x:hidden;" data-screen-label="Formulario post-webinar">
+
+  <!-- progress bar -->
+  <sc-if value="{{ showProgress }}">
+    <div style="position:fixed; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.08); z-index:20;">
+      <div style="{{ progressBarStyle }}"></div>
+    </div>
+  </sc-if>
+
+  <!-- back button -->
+  <sc-if value="{{ showBack }}">
+    <button onClick="{{ goBack }}" style="position:fixed; top:20px; left:20px; z-index:20; width:38px; height:38px; border-radius:50%; border:none; background:rgba(255,255,255,0.08); color:#fff; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="background:rgba(255,255,255,0.16);">←</button>
+  </sc-if>
+
+  <div style="width:100%; max-width:640px; min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:100px 32px 60px; position:relative;">
+
+    <!-- STEP 0: INTRO -->
+    <sc-if value="{{ step === 0 }}" hint-placeholder-val="{{ true }}">
+      <div style="{{ animStyle }} text-align:center; display:flex; flex-direction:column; align-items:center; gap:28px;">
+        <div style="font-size:12px; letter-spacing:2px; font-weight:600; color:#ff5a45; text-transform:uppercase;">BariActive</div>
+        <h1 style="font-size:32px; line-height:1.25; font-weight:600; color:#fff; margin:0;">¡Gracias por asistir a nuestra Masterclass!</h1>
+        <p style="font-size:16px; line-height:1.6; color:rgba(255,255,255,0.65); margin:0; max-width:440px;">Por favor, dedica un momento a responder este breve formulario para que veamos si realmente te podemos ayudar.</p>
+        <button onClick="{{ next }}" style="margin-top:8px; background:#fff; color:#0f2b30; border:none; border-radius:12px; padding:16px 40px; font-size:16px; font-weight:600; font-family:inherit; cursor:pointer; transition:transform 0.15s;" style-hover="transform:scale(1.03);">Empezar</button>
+        <div style="display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.45); font-size:13px;">
+          <span>⏱</span><span>Toma 2 minutos</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- STEP 1: CONTACT -->
+    <sc-if value="{{ step === 1 }}">
+      <div style="{{ animStyle }}">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
+          <span style="width:26px; height:26px; border-radius:6px; background:#ff5a45; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">1</span>
+          <span style="font-size:13px; color:rgba(255,255,255,0.5); font-weight:500;">Para comenzar tu tratamiento</span>
+        </div>
+        <h2 style="font-size:26px; font-weight:600; color:#fff; margin:0 0 32px;">Completa tus datos de contacto</h2>
+
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <div>
+            <label style="display:block; font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:8px; font-weight:500;">Nombre completo</label>
+            <input value="{{ form.nombre }}" onChange="{{ onNombreChange }}" placeholder="Escribe tu nombre..." style="width:100%; background:transparent; border:none; border-bottom:2px solid rgba(255,255,255,0.2); color:#fff; font-size:19px; font-family:inherit; padding:8px 2px;" style-focus="border-bottom-color:#ff5a45;"/>
+          </div>
+          <div>
+            <label style="display:block; font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:8px; font-weight:500;">Email</label>
+            <input value="{{ form.email }}" onChange="{{ onEmailChange }}" placeholder="tu@email.com" style="width:100%; background:transparent; border:none; border-bottom:2px solid rgba(255,255,255,0.2); color:#fff; font-size:19px; font-family:inherit; padding:8px 2px;" style-focus="border-bottom-color:#ff5a45;"/>
+          </div>
+          <div>
+            <label style="display:block; font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:8px; font-weight:500;">Teléfono</label>
+            <div style="display:flex; gap:10px;">
+              <select value="{{ form.countryCode }}" onChange="{{ onCountryChange }}" style="flex-shrink:0; width:104px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:#fff; font-size:16px; font-family:inherit; padding:10px 8px;">
+                <sc-for list="{{ countries }}" as="c" hint-placeholder-count="0">
+                  <option value="{{ c.dial }}">{{ c.label }}</option>
+                </sc-for>
+              </select>
+              <input value="{{ form.telefono }}" onChange="{{ onTelefonoChange }}" placeholder="Tu WhatsApp" style="flex:1; min-width:0; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:#fff; font-size:19px; font-family:inherit; padding:10px 14px;" style-focus="border-color:#ff5a45;"/>
+            </div>
+          </div>
+        </div>
+
+        <button onClick="{{ next }}" disabled="{{ contactInvalid }}" style="{{ okButtonStyle }}">Continuar</button>
+        <p style="font-size:12px; color:rgba(255,255,255,0.35); margin-top:14px;">Presiona Enter o el botón para continuar</p>
+      </div>
+    </sc-if>
+
+    <!-- STEPS 2-5: QUESTIONS -->
+    <sc-for list="{{ questions }}" as="q" hint-placeholder-count="0">
+      <sc-if value="{{ step === q.stepIndex }}">
+        <div style="{{ animStyle }}">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+            <span style="width:26px; height:26px; border-radius:6px; background:#ff5a45; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ q.number }}</span>
+            <span style="font-size:13px; color:rgba(255,255,255,0.5); font-weight:500;">Pregunta {{ q.number }} de {{ totalQuestions }}</span>
+          </div>
+          <h2 style="font-size:24px; line-height:1.4; font-weight:600; color:#fff; margin:0 0 28px;">{{ q.text }}</h2>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+              <div onClick="{{ opt.select }}" style="{{ opt.cardStyle }}" style-hover="background:rgba(255,255,255,0.1);">
+                <span style="{{ opt.letterStyle }}">{{ opt.letter }}</span>
+                <span style="font-size:16px; color:#fff; line-height:1.4;">{{ opt.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </sc-for>
+
+    <!-- STEP FINAL: THANK YOU -->
+    <sc-if value="{{ step === finalStep }}">
+      <div style="{{ animStyle }} text-align:center; display:flex; flex-direction:column; align-items:center; gap:20px;">
+        <div style="width:64px; height:64px; border-radius:50%; background:rgba(255,90,69,0.15); display:flex; align-items:center; justify-content:center; font-size:28px; color:#ff5a45;">✓</div>
+        <h1 style="font-size:28px; line-height:1.3; font-weight:600; color:#fff; margin:0;">¡Gracias, {{ firstName }}!</h1>
+        <p style="font-size:16px; line-height:1.6; color:rgba(255,255,255,0.65); margin:0; max-width:440px;">Recibimos tus respuestas. Pronto nos estaremos poniendo en contacto contigo para ver cómo podemos ayudarte a comenzar tu cambio físico.</p>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const QUESTION_DEFS = [
+  {
+    key: 'siguientePaso',
+    text: '¿Si hoy confirmamos que este tratamiento es adecuado para ti, cuál sería tu siguiente paso?',
+    options: [
+      'Comenzar el tratamiento esta misma semana.',
+      'Agendar una cita de evaluación para el próximo mes.',
+      'Guardar la información para el futuro.'
+    ]
+  },
+  {
+    key: 'situacionActual',
+    text: '¿Cómo describirías la situación actual respecto a tu reganancia o estancamiento?',
+    options: [
+      'Ya es insostenible y está afectando mi calidad de vida diaria.',
+      'Es molesto, pero aún puedo sobrellevarlo algunos días.',
+      'Es algo leve que me gustaría prevenir o mejorar a largo plazo.'
+    ]
+  },
+  {
+    key: 'tiempoBuscando',
+    text: '¿Cuánto tiempo llevas buscando una solución definitiva para esto?',
+    options: [
+      'Meses o años, ya he probado otras cosas y necesito algo que funcione YA.',
+      'Hace poco que empecé a notar el problema y quiero solucionarlo pronto.',
+      'Es la primera vez que busco información sobre el tema.'
+    ]
+  },
+  {
+    key: 'prioridad',
+    text: 'En este momento de tu vida, ¿qué lugar ocupa resolver este problema en tu lista de prioridades?',
+    options: [
+      'Prioridad número 1: Estoy lista para invertir tiempo y recursos en esto hoy.',
+      'Es importante, pero tengo otras cosas pendientes que resolver primero.',
+      'Es un deseo, pero no es una prioridad en este momento.'
+    ]
+  }
+];
+
+const STORAGE_KEY = 'bariactive_form_v1';
+const LETTERS = ['A', 'B', 'C', 'D'];
+
+const COUNTRIES = [
+  { code: 'AR', dial: '+54', flag: '🇦🇷', label: '🇦🇷 +54' },
+  { code: 'CL', dial: '+56', flag: '🇨🇱', label: '🇨🇱 +56' },
+  { code: 'UY', dial: '+598', flag: '🇺🇾', label: '🇺🇾 +598' },
+  { code: 'PY', dial: '+595', flag: '🇵🇾', label: '🇵🇾 +595' },
+  { code: 'BO', dial: '+591', flag: '🇧🇴', label: '🇧🇴 +591' },
+  { code: 'PE', dial: '+51', flag: '🇵🇪', label: '🇵🇪 +51' },
+  { code: 'CO', dial: '+57', flag: '🇨🇴', label: '🇨🇴 +57' },
+  { code: 'EC', dial: '+593', flag: '🇪🇨', label: '🇪🇨 +593' },
+  { code: 'VE', dial: '+58', flag: '🇻🇪', label: '🇻🇪 +58' },
+  { code: 'MX', dial: '+52', flag: '🇲🇽', label: '🇲🇽 +52' },
+  { code: 'ES', dial: '+34', flag: '🇪🇸', label: '🇪🇸 +34' },
+  { code: 'US', dial: '+1', flag: '🇺🇸', label: '🇺🇸 +1' }
+];
+
+class Component extends DCLogic {
+  state = {
+    step: 0,
+    direction: 'forward',
+    form: { nombre: '', email: '', telefono: '', countryCode: '+54' },
+    answers: {},
+    activeChoice: null
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.step !== this.state.step && this.state.activeChoice) {
+      this.setState({ activeChoice: null });
+    }
+  }
+
+  componentDidMount() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if (saved) {
+        this.setState({
+          form: { ...this.state.form, ...(saved.form || {}) },
+          answers: saved.answers || {}
+        });
+      }
+    } catch (e) {}
+  }
+
+  persist(patch) {
+    this.setState(patch, () => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          form: this.state.form,
+          answers: this.state.answers
+        }));
+      } catch (e) {}
+    });
+  }
+
+  next = () => {
+    this.setState(s => ({ step: s.step + 1, direction: 'forward' }));
+  };
+
+  goBack = () => {
+    this.setState(s => ({ step: Math.max(0, s.step - 1), direction: 'back' }));
+  };
+
+  onNombreChange = (e) => {
+    const v = e.target.value;
+    this.persist({ form: { ...this.state.form, nombre: v } });
+  };
+  onEmailChange = (e) => {
+    const v = e.target.value;
+    this.persist({ form: { ...this.state.form, email: v } });
+  };
+  onTelefonoChange = (e) => {
+    const v = e.target.value;
+    this.persist({ form: { ...this.state.form, telefono: v } });
+  };
+  onCountryChange = (e) => {
+    const v = e.target.value;
+    this.persist({ form: { ...this.state.form, countryCode: v } });
+  };
+
+  selectAnswer(key, value) {
+    const answers = { ...this.state.answers, [key]: value };
+    this.setState({ activeChoice: { key, value } });
+    this.persist({ answers });
+
+    if (key === 'prioridad') {
+      this.submitToSheet(answers);
+    }
+
+    setTimeout(() => {
+      this.setState(s => ({ step: s.step + 1, direction: 'forward' }));
+    }, 220);
+  }
+
+  submitToSheet(answers) {
+    const { form } = this.state;
+    const payload = {
+      form: 'post',
+      nombre: form.nombre,
+      gmail: form.email,
+      telefono: `${form.countryCode} ${form.telefono}`.trim(),
+      ask1: answers.siguientePaso || '',
+      ask2: answers.situacionActual || '',
+      ask3: answers.tiempoBuscando || '',
+      ask4: answers.prioridad || ''
+    };
+    try {
+      fetch('https://script.google.com/macros/s/AKfycbz-1n5N2omacVSEea3t5QUKKimMo6x-AZISW7Veg2DQiKyQlNrTQMZFYE8ToN6WOQsjbg/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
+  renderVals() {
+    const totalQuestions = QUESTION_DEFS.length;
+    const finalStep = 2 + totalQuestions; // 0 intro, 1 contact, 2..5 questions, 6 final
+    const { step, form, answers, activeChoice } = this.state;
+
+    const contactInvalid = !(form.nombre.trim() && form.email.trim() && form.telefono.trim());
+
+    const questions = QUESTION_DEFS.map((qd, i) => {
+      const stepIndex = 2 + i;
+      return {
+        stepIndex,
+        number: i + 1,
+        text: qd.text,
+        options: qd.options.map((label, oi) => {
+          const letter = LETTERS[oi];
+          const isSelected = !!(activeChoice && activeChoice.key === qd.key && activeChoice.value === label);
+          return {
+            letter,
+            label,
+            select: () => this.selectAnswer(qd.key, label),
+            cardStyle: `display:flex; align-items:center; gap:16px; padding:18px 20px; border-radius:12px; background:${isSelected ? 'rgba(255,90,69,0.18)' : 'rgba(255,255,255,0.06)'}; border:1px solid ${isSelected ? 'rgba(255,90,69,0.55)' : 'rgba(255,255,255,0.08)'}; cursor:pointer; transition:background 0.15s, border-color 0.15s;`,
+            letterStyle: `width:26px; height:26px; border-radius:8px; background:${isSelected ? '#ff5a45' : 'rgba(255,255,255,0.1)'}; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;`
+          };
+        })
+      };
+    });
+
+    const showProgress = step >= 1 && step <= finalStep - 1;
+    const progressableSteps = finalStep - 1; // steps 1..finalStep-1 count toward progress
+    const progressPct = showProgress ? Math.round((step / progressableSteps) * 100) : 0;
+
+    const animStyle = this.state.direction === 'forward'
+      ? 'animation: slideInRight 0.38s ease;'
+      : 'animation: fadeUp 0.32s ease;';
+
+    return {
+      step,
+      finalStep,
+      totalQuestions,
+      form,
+      questions,
+      contactInvalid,
+      showBack: step >= 1 && step < finalStep,
+      showProgress,
+      progressBarStyle: `height:100%; width:${progressPct}%; background:#ff5a45; transition:width 0.3s ease;`,
+      animStyle,
+      okButtonStyle: `margin-top:32px; background:${contactInvalid ? 'rgba(255,255,255,0.3)' : '#fff'}; color:#0f2b30; border:none; border-radius:12px; padding:16px 40px; font-size:16px; font-weight:600; font-family:inherit; cursor:${contactInvalid ? 'not-allowed' : 'pointer'};`,
+      next: this.next,
+      goBack: this.goBack,
+      onNombreChange: this.onNombreChange,
+      onEmailChange: this.onEmailChange,
+      onTelefonoChange: this.onTelefonoChange,
+      onCountryChange: this.onCountryChange,
+      countries: COUNTRIES,
+      firstName: (form.nombre || '').split(' ')[0] || 'gracias'
+    };
+  }
+}
+
+</script>
+</body>
+</html>
